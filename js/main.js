@@ -50,6 +50,10 @@ form.addEventListener("submit", (evento) => {
         //console.log(existe.id);
 
         atualizaElemento(itemAtual);
+
+        /*para salvar os dados no localStorage precisamos achar a posição onde está o nosso conteúdo e sobreescreve, e essa posição
+        é o "existe.id".*/
+        itens[existe.id] = itemAtual;
     } else {
         itemAtual.id = itens.length;
 
