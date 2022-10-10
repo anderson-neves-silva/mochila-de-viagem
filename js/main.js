@@ -29,10 +29,6 @@ form.addEventListener("submit", (evento) => {
     const nome = evento.target.elements['nome'];
     const quantidade = evento.target.elements['quantidade'];
 
-    //evento.target[0].value;
-    //console.log(evento.target.elements['nome'].value);
-    //console.log(evento.target.elements['quantidade'].value);
-
     /*tranformando a variável itemAtual em um objeto, com isso ao invés de enviarmos duas informações "nome e quantidade" 
     enviaremos para o "localStorage" apenas essa variável "itemAtual", mas dessa forma ele salva como tipo "object" e não
     é assim que precisamos, o "localStorage" só lê um arquivo do tipo "string/json", o que precisamos é transformar esse elemento
@@ -43,11 +39,30 @@ form.addEventListener("submit", (evento) => {
         "quantidade": quantidade.value
     }
 
-    criaElemento(itemAtual);
+    /*virificando se o item já existe no localStorage, vou fazer uma condicional que se verdadeira adiciona um "id" na 
+    const "itemAtual", mas quando criamos um novo elemento não criamos "id" neles e para isso lá na função "criaElelemento" 
+    devemos criar e será feito usando a propriedade do "data-attribute" e ele será colocado no elemento "strong" um atributo.*/
+    const existe = itens.find(element => element.nome === nome.value);
+    //console.log(existe);
+    if (existe) {
+        itemAtual.id = existe.id;
+        /*nesse ponto aqui já temos uma referência aqui, toda vez que adicionamos um item e se ele existir mostra o id.*/
+        //console.log(existe.id);
 
-    /*inserindo a variável "itemAtual" dentro do "array" de itens criando lá no início, e para isso uso o método "push" e devemos
-    passar a variável "itens" para o "localStorage" agora ele salva um array todos os dados que mandamos.*/
-    itens.push(itemAtual);
+        atualizaElemento(itemAtual);
+    } else {
+        itemAtual.id = itens.length;
+
+        //evento.target[0].value;
+        //console.log(evento.target.elements['nome'].value);
+        //console.log(evento.target.elements['quantidade'].value);
+
+        criaElemento(itemAtual);
+
+        /*inserindo a variável "itemAtual" dentro do "array" de itens criando lá no início, e para isso uso o método "push" e 
+        devemos passar a variável "itens" para o "localStorage" agora ele salva um array todos os dados que mandamos.*/
+        itens.push(itemAtual);
+    }
 
     localStorage.setItem("itens", JSON.stringify(itens));
 
@@ -85,10 +100,18 @@ function criaElemento(item) {
     const numeroItem = document.createElement('strong');
     numeroItem.innerHTML = item.quantidade;
     //console.log(numeroItem);
+    //aqui está sendo criado o data-attribute "id" incremental e por isso colocamos "id" no item ficando assim "item.id".
+    numeroItem.dataset.id = item.id;
     
     novoItem.appendChild(numeroItem);
     novoItem.innerHTML += item.nome;
 
     lista.appendChild(novoItem);
     //console.log(novoItem);
+}
+
+/*aqui a função recebe um item e atualiza pelo data-attribute que criamos no elemento "strong".*/
+function atualizaElemento(item) {
+    document.querySelector("[data-id='"+item.id+"']").innerHTML = item.quantidade;
+    //console.log(document.querySelector("[data-id='"+item.id+"']"));
 }
