@@ -108,7 +108,11 @@ function criaElemento(item) {
     numeroItem.dataset.id = item.id;
     
     novoItem.appendChild(numeroItem);
+
     novoItem.innerHTML += item.nome;
+
+    //faz o botão de deletar aparecer na tela.
+    novoItem.appendChild(botaoDeleta());
 
     lista.appendChild(novoItem);
     //console.log(novoItem);
@@ -118,4 +122,26 @@ function criaElemento(item) {
 function atualizaElemento(item) {
     document.querySelector("[data-id='"+item.id+"']").innerHTML = item.quantidade;
     //console.log(document.querySelector("[data-id='"+item.id+"']"));
+}
+
+/*função que cria o elemento botão que delata, lá na função criaElemento eu coloco esse código 
+novoItem.appendChild(botaoDeleta())*/
+function botaoDeleta() {
+    const elementoBotao = document.createElement("button");
+    elementoBotao.innerText = "X";
+
+    /*criando o evento de click no botão, eu preciso saber qual foi o elemento clicado e aqui a arrow function não carregar o 
+    this do js para frente por isso aqui uso uma function depois do click para poder usar o this , Obs. eu tinha uma 
+    arrow function antes, e ao clicar no elemento chama a função deletaElemento passando o this que é o elemento clicado,
+    e quando clicamos no boão apenas some o botão em tela, e para remover o elemento devemos passar o elemento pai pois o button
+    é filho de uma tag ul então passamos "this.parentNode".*/
+    elementoBotao.addEventListener("click", function() {
+        deletaElemento(this.parentNode);
+    });
+
+    return elementoBotao;
+}
+
+function deletaElemento(tag) {
+    tag.remove();
 }
