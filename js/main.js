@@ -52,10 +52,17 @@ form.addEventListener("submit", (evento) => {
         atualizaElemento(itemAtual);
 
         /*para salvar os dados no localStorage precisamos achar a posição onde está o nosso conteúdo e sobreescreve, e essa posição
-        é o "existe.id".*/
-        itens[existe.id] = itemAtual;
+        é o "existe.id", agora tive que mudar aqui pois estava pegando o item atual, então pegamos agora sempre o elemento 
+        correto, essa linha deixa sempre o "id" único, pois como esatava antes, após deletar algum item e adicionar outro, ele 
+        usuava o "id" do anterior, ou seja, o que foi deletado.*/
+        itens[itens.findIndex(elemento => elemento.id === existe.id)] = itemAtual;
     } else {
-        itemAtual.id = itens.length;
+        /*aqui no nosso array de itens no último elemento devemos pegar o id desse elemento e somar um, mas o array pode ser vazio
+        e por isso  devemos verificar primeiro se ele existe, aqui uso um "if else" mas usando o operador ternário, se o array 
+        não existe, ou seja, não tem nada é ": 0" isso é a condição final, agora se tiver já tiver alguma coisa no "id" devemos
+        achar no último elemento o "id" aí sim adicionamos 1 a ele, se isso existir "(itens[itens.length - 1]).id + 1" 
+        soma 1 ao id*/
+        itemAtual.id = itens[itens.length - 1] ? (itens[itens.length - 1]).id + 1 : 0;
 
         //evento.target[0].value;
         //console.log(evento.target.elements['nome'].value);
@@ -111,8 +118,9 @@ function criaElemento(item) {
 
     novoItem.innerHTML += item.nome;
 
-    //faz o botão de deletar aparecer na tela.
-    novoItem.appendChild(botaoDeleta());
+    /*faz o botão de deletar aparecer na tela, aqui no botãoDeleta preciso passar o item.id no retorno pois preciso dele para 
+    poder deletar o elemento lá no localStorage.*/
+    novoItem.appendChild(botaoDeleta(item.id));
 
     lista.appendChild(novoItem);
     //console.log(novoItem);
@@ -126,7 +134,7 @@ function atualizaElemento(item) {
 
 /*função que cria o elemento botão que delata, lá na função criaElemento eu coloco esse código 
 novoItem.appendChild(botaoDeleta())*/
-function botaoDeleta() {
+function botaoDeleta(id) {
     const elementoBotao = document.createElement("button");
     elementoBotao.innerText = "X";
 
@@ -134,14 +142,27 @@ function botaoDeleta() {
     this do js para frente por isso aqui uso uma function depois do click para poder usar o this , Obs. eu tinha uma 
     arrow function antes, e ao clicar no elemento chama a função deletaElemento passando o this que é o elemento clicado,
     e quando clicamos no boão apenas some o botão em tela, e para remover o elemento devemos passar o elemento pai pois o button
-    é filho de uma tag ul então passamos "this.parentNode".*/
+    é filho de uma tag ul então passamos "this.parentNode", passo também o id para poder identificar o elemento para ser deletado 
+    lá no localStorage.*/
     elementoBotao.addEventListener("click", function() {
-        deletaElemento(this.parentNode);
+        deletaElemento(this.parentNode, id);
     });
 
     return elementoBotao;
 }
 
-function deletaElemento(tag) {
+/*para remover um item usamos o splice no array, o splice ele funciona na posição do array e para isso precisamos do id, aqui no 
+retorno da função eu passa a tag e o id para remover o elemento clicado correto, aqui preciso acessar o array de itens e
+remover esse elemento, agora para remover o elemento correto eu preciso procurar o elemento dentro do array.*/
+function deletaElemento(tag, id) {
     tag.remove();
+    
+    //elemento e quero buscar o elemento.id e quero que ele seja igual ao id que recebemos aqui
+    itens.splice(itens.findIndex(elemento => elemento.id === id), 1);
+
+    //preciso agora apenas escreve no localStorage com essa linha e altera o conteúdo do localStorage
+    localStorage.setItem("itens", JSON.stringify(itens));
+    
+    console.log(itens);
+    //console.log(id);
 }
